@@ -1,0 +1,99 @@
+// 初始化資料儲存
+let records = JSON.parse(localStorage.getItem('callRecords')) || [];
+
+// 日期顯示
+document.getElementById('todayDate').textContent = 
+    new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+// 動態更新統計
+function updateStats() {
+    document.getElementById('progress').textContent = records.length;
+    const avg = records.reduce((sum, r) => sum + parseInt(r.intention), 0) / records.length || 0;
+    document.getElementById('avgIntention').textContent = avg.toFixed(1);
+}
+
+// 新增記錄功能
+function addRecord() {
+    const record = {
+        type: document.getElementById('clientType').value,
+        name: document.getElementById('clientName').value.trim(),
+        phone: document.getElementById('clientPhone').value.trim(),
+        propertyId: document.getElementById('propertyId').value.trim(),
+        intention: document.getElementById('intentionLevel').value,
+        followUp: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0],
+        note: ''
+    };
+
+    if (!record.name || !record.phone || !record.propertyId) {
+        alert("請填寫所有欄位！");
+        return;
+    }
+
+    records.push(record);
+    saveData();
+    renderList();
+}
+
+// 渲染列表（卡片式設計）
+function renderList() {
+    const list = document.getElementById('recordsList');
+    list.innerHTML = records.map((record, index) => `
+        <div class="record-item">
+            <div>
+                <span class="badge ${record.type === 'buyer' ? 'buyer-badge' : 'seller-badge'}">
+                    ${record.type === 'buyer' ? '🟢 買方' : '🔴 賣方'}
+                </span>
+                <strong>${record.name}</strong>
+            </div>
+            <div>📞 ${record.phone.replace(/(\d{4})(\d{3})(\d{3})/, '09**-***-$3')}</div>
+            <div>🏠 房源編號：${record.propertyId}</div>
+            <div>⭐ 意向：${'★'.repeat(record.intention)}</div>
+            <div>📅 下次聯繫：${record.followUp}</div>
+            <div style="margin-top:12px;">
+                <button onclick="deleteRecord(${index})" style="background:transparent;color:#FF3B30;border:1px solid #FF3B30;height:36px;">刪除</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+// 資料儲存優化
+function saveData() {
+    localStorage.setItem('callRecords', JSON.stringify(records));
+    updateStats();
+}
+
+// 刪除記錄
+function deleteRecord(index) {
+    records.splice(index, 1);
+    saveData();
+    renderList();
+}
+
+// CSV匯出（iOS適配）
+function exportCSV() {
+    const csvContent = "data:text/csv;charset=utf-8," +
+        "類型,姓名,電話,房源編號,意向等級,下次跟進\n" +
+        records.map(r => `${r.type},${r.name},${r.phone},${r.propertyId},${'★'.repeat(r.intention)},${r.followUp}`).join("\n");
+
+    const filename = `電訪記錄_${new Date().toISOString().slice(0,10)}.csv`;
+    const link = document.createElement("a");
+    link.href = encodeURI(csvContent);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+}
+
+// 貓咪頭部搖動動畫
+function animateCatHead() {
+    const catHead = document.querySelector('.cat-head');
+    let angle = 0;
+    setInterval(() => {
+        angle = Math.sin(Date.now() / 300) * 5; // 調整速度與角度幅度
+        catHead.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+    }, 50);
+}
+
+// 初始化執行
+renderList();
+updateStats();
+animateCatHead(); // 啟動貓咪頭部動畫
