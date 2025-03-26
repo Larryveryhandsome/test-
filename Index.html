@@ -1,99 +1,71 @@
-// 初始化資料儲存
-let records = JSON.parse(localStorage.getItem('callRecords')) || [];
+# 「漆彩」應用程式隱私政策
 
-// 日期顯示
-document.getElementById('todayDate').textContent = 
-    new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' });
+最後更新日期：[日期]
 
-// 動態更新統計
-function updateStats() {
-    document.getElementById('progress').textContent = records.length;
-    const avg = records.reduce((sum, r) => sum + parseInt(r.intention), 0) / records.length || 0;
-    document.getElementById('avgIntention').textContent = avg.toFixed(1);
-}
+## 引言
 
-// 新增記錄功能
-function addRecord() {
-    const record = {
-        type: document.getElementById('clientType').value,
-        name: document.getElementById('clientName').value.trim(),
-        phone: document.getElementById('clientPhone').value.trim(),
-        propertyId: document.getElementById('propertyId').value.trim(),
-        intention: document.getElementById('intentionLevel').value,
-        followUp: new Date(Date.now() + 2 * 86400000).toISOString().split('T')[0],
-        note: ''
-    };
+「漆彩」（以下簡稱「我們」、「本應用」）尊重並保護所有使用者的隱私權。本隱私政策說明我們如何收集、使用、披露和保護您在使用本應用時提供的資訊。
 
-    if (!record.name || !record.phone || !record.propertyId) {
-        alert("請填寫所有欄位！");
-        return;
-    }
+## 資訊收集
 
-    records.push(record);
-    saveData();
-    renderList();
-}
+### 我們收集的資訊
 
-// 渲染列表（卡片式設計）
-function renderList() {
-    const list = document.getElementById('recordsList');
-    list.innerHTML = records.map((record, index) => `
-        <div class="record-item">
-            <div>
-                <span class="badge ${record.type === 'buyer' ? 'buyer-badge' : 'seller-badge'}">
-                    ${record.type === 'buyer' ? '🟢 買方' : '🔴 賣方'}
-                </span>
-                <strong>${record.name}</strong>
-            </div>
-            <div>📞 ${record.phone.replace(/(\d{4})(\d{3})(\d{3})/, '09**-***-$3')}</div>
-            <div>🏠 房源編號：${record.propertyId}</div>
-            <div>⭐ 意向：${'★'.repeat(record.intention)}</div>
-            <div>📅 下次聯繫：${record.followUp}</div>
-            <div style="margin-top:12px;">
-                <button onclick="deleteRecord(${index})" style="background:transparent;color:#FF3B30;border:1px solid #FF3B30;height:36px;">刪除</button>
-            </div>
-        </div>
-    `).join('');
-}
+本應用可能收集以下類型的資訊：
 
-// 資料儲存優化
-function saveData() {
-    localStorage.setItem('callRecords', JSON.stringify(records));
-    updateStats();
-}
+1. **個人識別資訊**：包括但不限於您的姓名、電子郵件地址、電話號碼（僅當您選擇提供時）。
+2. **使用資料**：包括您如何使用本應用的資訊，如搜尋歷史、色彩比對記錄、收藏的色彩等。
+3. **設備資訊**：包括設備型號、操作系統版本、唯一設備識別碼等。
 
-// 刪除記錄
-function deleteRecord(index) {
-    records.splice(index, 1);
-    saveData();
-    renderList();
-}
+### 收集方式
 
-// CSV匯出（iOS適配）
-function exportCSV() {
-    const csvContent = "data:text/csv;charset=utf-8," +
-        "類型,姓名,電話,房源編號,意向等級,下次跟進\n" +
-        records.map(r => `${r.type},${r.name},${r.phone},${r.propertyId},${'★'.repeat(r.intention)},${r.followUp}`).join("\n");
+我們通過以下方式收集資訊：
 
-    const filename = `電訪記錄_${new Date().toISOString().slice(0,10)}.csv`;
-    const link = document.createElement("a");
-    link.href = encodeURI(csvContent);
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-}
+1. 您直接提供的資訊（如註冊帳號時）
+2. 自動收集的資訊（如使用應用時的行為資料）
 
-// 貓咪頭部搖動動畫
-function animateCatHead() {
-    const catHead = document.querySelector('.cat-head');
-    let angle = 0;
-    setInterval(() => {
-        angle = Math.sin(Date.now() / 300) * 5; // 調整速度與角度幅度
-        catHead.style.transform = `translateX(-50%) rotate(${angle}deg)`;
-    }, 50);
-}
+## 資訊使用
 
-// 初始化執行
-renderList();
-updateStats();
-animateCatHead(); // 啟動貓咪頭部動畫
+我們使用收集的資訊用於：
+
+1. 提供、維護和改進本應用的服務
+2. 處理您的查詢和請求
+3. 發送與應用相關的通知
+4. 分析使用模式以優化用戶體驗
+5. 防止欺詐和濫用行為
+
+## 資訊共享
+
+我們不會出售、交易或轉讓您的個人識別資訊給外部第三方。以下情況除外：
+
+1. 經您明確同意
+2. 為提供您請求的服務而必須與合作夥伴共享
+3. 法律要求或政府機構的合法要求
+
+## 資料安全
+
+我們採取合理的安全措施保護您的資訊不被未經授權的訪問、使用或披露。
+
+## 您的權利
+
+您有權：
+
+1. 訪問我們持有的關於您的個人資料
+2. 更正不準確的資料
+3. 要求刪除您的資料
+4. 反對我們處理您的資料
+5. 限制我們使用您的資料
+
+## 兒童隱私
+
+本應用不針對13歲以下兒童。我們不會故意收集13歲以下兒童的個人識別資訊。
+
+## 隱私政策更新
+
+我們可能會不時更新本隱私政策。更新後的政策將在本頁面發布，並在適當情況下通知您。
+
+## 聯絡我們
+
+如果您對本隱私政策有任何疑問，請聯絡我們：
+
+- 電子郵件：[您的電子郵件]
+- 地址：[您的地址]
